@@ -39,6 +39,14 @@ XPT2046_Touchscreen touchscreen(XPT2046_CS, XPT2046_IRQ);
 // Touchscreen coordinates: (x, y) and pressure (z)
 int x, y, z;
 
+// Brightness control variables
+int current_brightness = 80;  // Start at 80%
+
+// Global UI element pointers
+static lv_obj_t * counter_label;
+static lv_obj_t * sensor_label;
+static lv_obj_t * brightness_label;
+
 #define DRAW_BUF_SIZE (SCREEN_WIDTH * SCREEN_HEIGHT / 10 * (LV_COLOR_DEPTH / 8))
 uint32_t draw_buf[DRAW_BUF_SIZE / 4];
 
@@ -66,6 +74,34 @@ void touchscreen_read(lv_indev_t * indev, lv_indev_data_t * data) {
     data->point.x = x;
     data->point.y = y;
 
+    // Check for brightness control touch areas (top of screen - right side in coordinate system)
+    static unsigned long last_brightness_change = 0;
+    unsigned long current_time = millis();
+    
+    if (x > SCREEN_WIDTH * 3/4 && current_time - last_brightness_change > 200) {  // Right edge (top of rotated screen) and debounce
+      if (y < SCREEN_HEIGHT / 2) {
+        // Top left (when rotated) - decrease brightness
+        current_brightness -= 10;
+        if (current_brightness < 0) current_brightness = 0;
+      } else {
+        // Top right (when rotated) - increase brightness
+        current_brightness += 10;
+        if (current_brightness > 100) current_brightness = 100;
+      }
+      
+      // Update brightness
+      int pwm_value = map(current_brightness, 0, 100, 0, 255);
+      analogWrite(21, pwm_value);
+      
+      // Update brightness display
+      char brightness_buf[16];
+      lv_snprintf(brightness_buf, sizeof(brightness_buf), "%d%%", current_brightness);
+      lv_label_set_text(brightness_label, brightness_buf);
+      
+      last_brightness_change = current_time;
+      LV_LOG_USER("Brightness changed to %d%%", current_brightness);
+    }
+
     // Print Touchscreen info about X, Y and Pressure (Z) on the Serial Monitor
     /* Serial.print("X = ");
     Serial.print(x);
@@ -81,23 +117,9 @@ void touchscreen_read(lv_indev_t * indev, lv_indev_data_t * data) {
 }
 
 int btn1_count = 0;
-static lv_obj_t * counter_label;
-static lv_obj_t * sensor_label;
 
 // GPIO 35 for binary input sensor
 #define SENSOR_PIN 35
-
-// Callback that is triggered when btn1 is clicked
-static void event_handler_btn1(lv_event_t * e) {
-  lv_event_code_t code = lv_event_get_code(e);
-  if(code == LV_EVENT_CLICKED) {
-    btn1_count++;
-    char count_buf[16];
-    lv_snprintf(count_buf, sizeof(count_buf), "Count: %d", btn1_count);
-    lv_label_set_text(counter_label, count_buf);
-    LV_LOG_USER("Button clicked %d", (int)btn1_count);
-  }
-}
 
 // Callback that is triggered when btn2 is clicked/toggled (Reset button)
 static void event_handler_btn2(lv_event_t * e) {
@@ -107,25 +129,6 @@ static void event_handler_btn2(lv_event_t * e) {
     lv_label_set_text(counter_label, "Count: 0");
     LV_LOG_USER("Counter reset to 0");
   }
-}
-
-static lv_obj_t * slider_label;
-// Callback that adjusts screen brightness and displays the current slider value
-static void slider_event_callback(lv_event_t * e) {
-  lv_obj_t * slider = (lv_obj_t*) lv_event_get_target(e);
-  int brightness_value = lv_slider_get_value(slider);
-  
-  // Map slider value (0-100) to PWM value (0-255)
-  int pwm_value = map(brightness_value, 1, 100, 1, 255);
-  
-  // Set the brightness using PWM on the backlight pin
-  analogWrite(21, pwm_value);  // TFT_BL pin
-  
-  char buf[16];
-  lv_snprintf(buf, sizeof(buf), "Brightness: %d%%", brightness_value);
-  lv_label_set_text(slider_label, buf);
-  lv_obj_align_to(slider_label, slider, LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
-  LV_LOG_USER("Brightness changed to %d%% (PWM: %d)", brightness_value, pwm_value);
 }
 
 void lv_create_main_gui(void) {
@@ -150,30 +153,14 @@ void lv_create_main_gui(void) {
   lv_obj_align(sensor_label, LV_ALIGN_CENTER, 0, -60);
 
   lv_obj_t * btn_label;
-  // Create a Button (btn1) - positioned to the left
-  lv_obj_t * btn1 = lv_button_create(lv_screen_active());
-  lv_obj_add_event_cb(btn1, event_handler_btn1, LV_EVENT_ALL, NULL);
-  lv_obj_align(btn1, LV_ALIGN_CENTER, -60, -10);  // Move left by 60 pixels
-  lv_obj_remove_flag(btn1, LV_OBJ_FLAG_PRESS_LOCK);
-  lv_obj_set_size(btn1, 100, 40);  // Set explicit size
-  // Set button color to blue with stronger styling
-  lv_obj_set_style_bg_color(btn1, lv_color_hex(0x0080FF), LV_PART_MAIN | LV_STATE_DEFAULT);
-  lv_obj_set_style_bg_color(btn1, lv_color_hex(0x0066CC), LV_PART_MAIN | LV_STATE_PRESSED);
-  lv_obj_set_style_bg_opa(btn1, LV_OPA_COVER, LV_PART_MAIN);
-
-  btn_label = lv_label_create(btn1);
-  lv_label_set_text(btn_label, "Button");
-  lv_obj_center(btn_label);
-  lv_obj_set_style_text_color(btn_label, lv_color_white(), LV_PART_MAIN);
-
-  // Create a Reset button (btn2) - positioned to the right
+  // Create a Reset button (btn2) - positioned in center
   lv_obj_t * btn2 = lv_button_create(lv_screen_active());
   lv_obj_add_event_cb(btn2, event_handler_btn2, LV_EVENT_ALL, NULL);
-  lv_obj_align(btn2, LV_ALIGN_CENTER, 60, -10);   // Move right by 60 pixels
+  lv_obj_align(btn2, LV_ALIGN_CENTER, 0, -10);   // Center position
   lv_obj_set_size(btn2, 100, 40);  // Set explicit size
   // Set button color to blue with stronger styling
   lv_obj_set_style_bg_color(btn2, lv_color_hex(0x0080FF), LV_PART_MAIN | LV_STATE_DEFAULT);
-  lv_obj_set_style_bg_color(btn2, lv_color_hex(0x0066CC), LV_PART_MAIN | LV_STATE_PRESSED);
+  lv_obj_set_style_bg_color(btn2, lv_color_hex(0x0000FF), LV_PART_MAIN | LV_STATE_PRESSED);
   lv_obj_set_style_bg_opa(btn2, LV_OPA_COVER, LV_PART_MAIN);
 
   btn_label = lv_label_create(btn2);
@@ -181,23 +168,10 @@ void lv_create_main_gui(void) {
   lv_obj_center(btn_label);
   lv_obj_set_style_text_color(btn_label, lv_color_white(), LV_PART_MAIN);
   
-  // Create a slider aligned in the center bottom of the TFT display
-  lv_obj_t * slider = lv_slider_create(lv_screen_active());
-  lv_obj_align(slider, LV_ALIGN_CENTER, 0, 50);  // Moved up since buttons are now side by side
-  lv_obj_add_event_cb(slider, slider_event_callback, LV_EVENT_VALUE_CHANGED, NULL);
-  lv_slider_set_range(slider, 0, 100);
-  lv_slider_set_value(slider, 80, LV_ANIM_OFF); // Set initial brightness to 80%
-  lv_obj_set_style_anim_duration(slider, 2000, 0);
-  // Set slider color to blue with stronger styling
-  lv_obj_set_style_bg_color(slider, lv_color_hex(0x0080FF), LV_PART_INDICATOR | LV_STATE_DEFAULT);
-  lv_obj_set_style_bg_color(slider, lv_color_hex(0x0080FF), LV_PART_KNOB | LV_STATE_DEFAULT);
-  lv_obj_set_style_bg_opa(slider, LV_OPA_COVER, LV_PART_INDICATOR);
-  lv_obj_set_style_bg_opa(slider, LV_OPA_COVER, LV_PART_KNOB);
-
-  // Create a label below the slider to display the current brightness value
-  slider_label = lv_label_create(lv_screen_active());
-  lv_label_set_text(slider_label, "Brightness: 80%");
-  lv_obj_align_to(slider_label, slider, LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
+  // Create brightness percentage label in bottom right corner
+  brightness_label = lv_label_create(lv_screen_active());
+  lv_label_set_text(brightness_label, "80%");
+  lv_obj_align(brightness_label, LV_ALIGN_BOTTOM_RIGHT, -10, -10);
 }
 
 void setup() {
@@ -245,17 +219,24 @@ void loop() {
   lv_tick_inc(5);     // tell LVGL how much time has passed
   
   // Read sensor state and update display
-  static bool last_sensor_state = false;
+  static bool last_sensor_state = true;  // Start with HIGH (pull-up default)
   bool current_sensor_state = digitalRead(SENSOR_PIN);
   
   // Update sensor display if state changed
   if (current_sensor_state != last_sensor_state) {
-    if (current_sensor_state == LOW) {  // Assuming active LOW (pulled to ground when triggered)
+    if (current_sensor_state == LOW) {  // Sensor triggered (active LOW)
       lv_label_set_text(sensor_label, "Sensor: on");
       LV_LOG_USER("Sensor triggered: ON");
     } else {
       lv_label_set_text(sensor_label, "Sensor: off");
       LV_LOG_USER("Sensor state: OFF");
+      
+      // Increment counter when sensor goes from ON to OFF (end of detection)
+      btn1_count++;
+      char count_buf[16];
+      lv_snprintf(count_buf, sizeof(count_buf), "Count: %d", btn1_count);
+      lv_label_set_text(counter_label, count_buf);
+      LV_LOG_USER("Bale counted! Total: %d", btn1_count);
     }
     last_sensor_state = current_sensor_state;
   }
