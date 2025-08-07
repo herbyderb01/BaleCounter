@@ -9,7 +9,6 @@
 
 #include <Arduino.h>
 #include <SPI.h>
-#include "RGBledDriver.h"
 
 /*Using LVGL with Arduino requires some extra steps:
  *Be sure to read the docs here: https://docs.lvgl.io/master/get-started/platforms/arduino.html  */
@@ -27,15 +26,15 @@
 // ----------------------------
 
 // The CYD touch uses some non default
-// SPI pins
+// SPI pins for Touchscreen
+#define XPT2046_IRQ 36   // T_IRQ
+#define XPT2046_MOSI 32  // T_DIN
+#define XPT2046_MISO 39  // T_OUT
+#define XPT2046_CLK 25   // T_CLK
+#define XPT2046_CS 33    // T_CS
 
-#define XPT2046_IRQ 36
-#define XPT2046_MOSI 32
-#define XPT2046_MISO 39
-#define XPT2046_CLK 25
-#define XPT2046_CS 33
+#define BRIGHTNESS_ENABLED // Uncomment to enable brightness control
 
-// SPIClass mySpi = SPIClass(HSPI); // touch does not work with this setting
 SPIClass mySpi = SPIClass(VSPI); // critical to get touch working
 
 XPT2046_Touchscreen ts(XPT2046_CS, XPT2046_IRQ);
@@ -72,34 +71,75 @@ void my_disp_flush(lv_disp_drv_t *disp_drv, const lv_area_t *area, lv_color_t *c
     lv_disp_flush_ready(disp_drv);
 }
 
+static unsigned long lastTouchTime = 0;
+static bool touchProcessed = false;
+
+// Brightness control variables
+int current_brightness = 80;  // Start at 80%
+
 /*Read the touchpad*/
 void my_touchpad_read(lv_indev_drv_t *indev_drv, lv_indev_data_t *data)
 {
     uint16_t touchX, touchY;
-
-    bool touched = (ts.tirqTouched() && ts.touched()); // this is the version needed for XPT2046 touchscreen
-
+    bool touched = (ts.tirqTouched() && ts.touched());
+    
     if (!touched)
     {
         data->state = LV_INDEV_STATE_REL;
+        touchProcessed = false; // Reset when touch is released
     }
     else
     {
-        // the following three lines are specific for using the XPT2046 touchscreen
+        // Debounce touch input
+        unsigned long currentTime = millis();
+        if (currentTime - lastTouchTime < 100) { // 100ms debounce
+            return;
+        }
+        
         TS_Point p = ts.getPoint();
-        touchX = map(p.x, 200, 3700, 1, screenWidth);  /* Touchscreen X calibration */
-        touchY = map(p.y, 240, 3800, 1, screenHeight); /* Touchscreen X calibration */
+        touchX = map(p.x, 200, 3700, 1, screenWidth);
+        touchY = map(p.y, 240, 3800, 1, screenHeight);
+        
         data->state = LV_INDEV_STATE_PR;
-
-        /*Set the coordinates*/
         data->point.x = touchX;
         data->point.y = touchY;
 
-        Serial.print("Data x ");
-        Serial.println(touchX);
+#ifdef BRIGHTNESS_ENABLED
 
-        Serial.print("Data y ");
-        Serial.println(touchY);
+        // Check for brightness control touch areas (top quadrants of screen)
+        static unsigned long last_brightness_change = 0;
+        
+        if (touchY < screenHeight / 2 && currentTime - last_brightness_change > 200) {  // Top half and debounce
+            if (touchX < screenWidth / 2) {
+                // Top left - decrease brightness
+                current_brightness -= 10;
+                if (current_brightness < 0) current_brightness = 0;
+            } else {
+                // Top right - increase brightness
+                current_brightness += 10;
+                if (current_brightness > 100) current_brightness = 100;
+            }
+            
+            // Update brightness
+            int pwm_value = map(current_brightness, 0, 100, 0, 255);
+            analogWrite(21, pwm_value);
+            
+            last_brightness_change = currentTime;
+            Serial.print("Brightness changed to ");
+            Serial.print(current_brightness);
+            Serial.println("%");
+        }
+#endif // BRIGHTNESS_ENABLED
+
+        if (!touchProcessed) {
+            Serial.print("Touch at x: ");
+            Serial.print(touchX);
+            Serial.print(", y: ");
+            Serial.println(touchY);
+            
+            lastTouchTime = currentTime;
+            touchProcessed = true;
+        }
     }
 }
 
@@ -112,9 +152,6 @@ void setup()
 
     Serial.println(LVGL_Arduino);
     Serial.println("I am LVGL_Arduino");
-
-    initRGBled();
-    ChangeRGBColor(RGB_COLOR_1);
 
     lv_init();
 
@@ -129,6 +166,10 @@ void setup()
     tft.begin();        /* TFT init */
     tft.setRotation(1); // Landscape orientation  1 =  CYC usb on right, 2 for vertical
     tft.invertDisplay(1); // Fix inverted colors - if colors are still wrong, try tft.invertDisplay(0)
+
+    // Initialize the backlight pin for PWM control and set initial brightness
+    pinMode(21, OUTPUT);  // TFT_BL pin
+    analogWrite(21, 204); // Set initial brightness to 80% (204/255)
 
     lv_disp_draw_buf_init(&draw_buf, buf, NULL, screenWidth * screenHeight / 10);
 

@@ -2,8 +2,11 @@ SET(SOURCES ui_Main.c
     ui.c
     ui_comp_hook.c
     ui_helpers.c
+    ui_events.c
+    ui_img_hay_flake_better_60tall_png.c
     ui_img_hay_png.c
-    ui_img_hay_flake_png.c
-    ui_img_balesperhour_png.c)
+    ui_img_hay_time_png.c
+    ui_img_balesperhour_102tall_png.c
+    ui_img_setting_white_png.c)
 
 add_library(ui ${SOURCES})

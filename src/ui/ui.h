@@ -24,9 +24,11 @@ extern "C" {
 extern lv_obj_t * ui____initial_actions0;
 
 // IMAGES AND IMAGE SETS
+LV_IMG_DECLARE(ui_img_hay_flake_better_60tall_png);    // assets/hay flake_better_60tall.png
 LV_IMG_DECLARE(ui_img_hay_png);    // assets/hay.png
-LV_IMG_DECLARE(ui_img_hay_flake_png);    // assets/hay flake.png
-LV_IMG_DECLARE(ui_img_balesperhour_png);    // assets/balesperhour.png
+LV_IMG_DECLARE(ui_img_hay_time_png);    // assets/hay_time.png
+LV_IMG_DECLARE(ui_img_balesperhour_102tall_png);    // assets/balesperhour_102tall.png
+LV_IMG_DECLARE(ui_img_setting_white_png);    // assets/setting_white.png
 
 // UI INIT
 void ui_init(void);

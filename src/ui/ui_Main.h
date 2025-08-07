@@ -14,13 +14,36 @@ extern "C" {
 extern void ui_Main_screen_init(void);
 extern void ui_Main_screen_destroy(void);
 extern lv_obj_t * ui_Main;
-extern lv_obj_t * ui_Image1;
-extern lv_obj_t * ui_Image2;
-extern lv_obj_t * ui_Image3;
-extern lv_obj_t * ui_Label1;
-extern lv_obj_t * ui_Button1;
+extern lv_obj_t * ui_FlakeContainer;
+extern lv_obj_t * ui_FlakeCountImage;
+extern lv_obj_t * ui_FlakeCountNum;
+extern lv_obj_t * ui_BaleCountContainer;
+extern lv_obj_t * ui_BaleCountImage;
+extern lv_obj_t * ui_BaleCountLabel;
+extern void ui_event_CountIncrement(lv_event_t * e);
+extern lv_obj_t * ui_CountIncrement;
+extern lv_obj_t * ui_CountButtonText;
+extern lv_obj_t * ui_BaleCount;
+extern lv_obj_t * ui_BaleCountYearContainer;
+extern lv_obj_t * ui_BaleCountImage1;
+extern lv_obj_t * ui_BaleCountNum1;
+extern lv_obj_t * ui_BaleCountHourContainer;
+extern lv_obj_t * ui_FlakeCountImage1;
+extern lv_obj_t * ui_FlakeCountNum1;
+extern lv_obj_t * ui_ImgButton1;
 // CUSTOM VARIABLES
 extern lv_obj_t * uiCYD_Main;
+extern lv_obj_t * uiCYD_FlakeContainer;
+extern lv_obj_t * uiCYD_FlakeCountImage;
+extern lv_obj_t * uiCYD_FlakeCount1;
+extern lv_obj_t * uiCYD_BaleCountContainer;
+extern lv_obj_t * uiCYD_BaleCountImage;
+extern lv_obj_t * uiCYD_BaleCountLabel;
+extern lv_obj_t * uiCYD_CountIncrement;
+extern lv_obj_t * uiCYD_CountButtonText;
+extern lv_obj_t * uiCYD_BaleCount;
+extern lv_obj_t * uiCYD_BaleCountYearContainer;
+extern lv_obj_t * uiCYD_BaleCountHourContainer;
 
 #ifdef __cplusplus
 } /*extern "C"*/
