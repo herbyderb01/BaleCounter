@@ -17,6 +17,7 @@
 #include <TFT_eSPI.h>
 #include "ui.h"
 #include <XPT2046_Touchscreen.h>
+#include <Preferences.h> // include Preferences library for saving bale variables across reboots
 // A library for interfacing with the touch screen
 //
 // Can be installed from the library manager (Search for "XPT2046")
@@ -34,6 +35,19 @@
 #define XPT2046_CS 33    // T_CS
 
 #define BRIGHTNESS_ENABLED // Uncomment to enable brightness control
+
+// Bale counting variables
+int bale_count = 0;
+int bale_count_year = 0;
+int flake_count = 0;
+int flake_count_prev1 = 0;  // Previous bale's flake count
+int flake_count_prev2 = 0;  // Two bales ago flake count
+Preferences preferences; // Preferences object for saving bale count across reboots
+
+// GPIO 35 for binary input sensor (from your old code)
+#define BALE_SENSOR_PIN 35
+// GPIO 22 for flake count sensor
+#define FLAKE_SENSOR_PIN 22
 
 SPIClass mySpi = SPIClass(VSPI); // critical to get touch working
 
@@ -76,6 +90,153 @@ static bool touchProcessed = false;
 
 // Brightness control variables
 int current_brightness = 80;  // Start at 80%
+
+// Function to update the bale count display on the UI
+void updateBaleCountDisplay() {
+    char count_buf[16];
+    lv_snprintf(count_buf, sizeof(count_buf), "%d", bale_count);
+    lv_label_set_text(uiCYD_BaleCount, count_buf);
+}
+
+// Function to update the yearly bale count display on the UI
+void updateBaleCountYearDisplay() {
+    char count_buf[16];
+    lv_snprintf(count_buf, sizeof(count_buf), "%d", bale_count_year);
+    lv_label_set_text(uiCYD_BaleCountYear, count_buf);
+}
+
+// Function to update the flake count display on the UI
+void updateFlakeCountDisplay() {
+    char count_buf[16];
+    lv_snprintf(count_buf, sizeof(count_buf), "%d", flake_count);
+    lv_label_set_text(uiCYD_FlakeCountCurrent, count_buf);
+}
+
+// Function to update the previous flake count displays on the UI
+void updateFlakeCountPrev1Display() {
+    char count_buf[16];
+    lv_snprintf(count_buf, sizeof(count_buf), "%d", flake_count_prev1);
+    lv_label_set_text(uiCYD_FlakeCountPrev1, count_buf);
+}
+
+void updateFlakeCountPrev2Display() {
+    char count_buf[16];
+    lv_snprintf(count_buf, sizeof(count_buf), "%d", flake_count_prev2);
+    lv_label_set_text(uiCYD_FlakeCountPrev2, count_buf);
+}
+
+// Function to increment bale count - needs C linkage for ui_events.c
+extern "C" {
+void incrementBaleCount() {
+    bale_count++;
+    bale_count_year++;  // Also increment yearly count
+    
+    // Shift flake counts: prev2 <- prev1 <- current, then reset current to 0
+    flake_count_prev2 = flake_count_prev1;
+    flake_count_prev1 = flake_count;
+    flake_count = 0;  // Reset current flake count for new bale
+    
+    updateBaleCountDisplay();
+    updateBaleCountYearDisplay();
+    updateFlakeCountDisplay();
+    updateFlakeCountPrev1Display();
+    updateFlakeCountPrev2Display();
+    
+    // Save the updated counts to preferences
+    preferences.putUInt("bale_count", bale_count);
+    preferences.putUInt("bale_count_year", bale_count_year);
+    preferences.putUInt("flake_count", flake_count);
+    preferences.putUInt("flake_prev1", flake_count_prev1);
+    preferences.putUInt("flake_prev2", flake_count_prev2);
+    
+    Serial.print("Bale count incremented to: ");
+    Serial.println(bale_count);
+    Serial.print("Yearly bale count incremented to: ");
+    Serial.println(bale_count_year);
+    Serial.print("Flake counts shifted - Current: ");
+    Serial.print(flake_count);
+    Serial.print(", Prev1: ");
+    Serial.print(flake_count_prev1);
+    Serial.print(", Prev2: ");
+    Serial.println(flake_count_prev2);
+    Serial.println("All counts saved to preferences");
+}
+
+void incrementFlakeCount() {
+    flake_count++;
+    updateFlakeCountDisplay();
+    
+    // Save the updated count to preferences
+    preferences.putUInt("flake_count", flake_count);
+    // Also save previous flake counts to ensure they're always current
+    preferences.putUInt("flake_prev1", flake_count_prev1);
+    preferences.putUInt("flake_prev2", flake_count_prev2);
+    
+    Serial.print("Flake count incremented to: ");
+    Serial.println(flake_count);
+}
+
+void resetBaleCount() {
+    bale_count = 0;
+    updateBaleCountDisplay();
+    
+    // Save the reset count to preferences
+    preferences.putUInt("bale_count", bale_count);
+    
+    Serial.println("Bale count reset to 0");
+}
+
+void resetBaleCountYear() {
+    bale_count_year = 0;
+    updateBaleCountYearDisplay();
+    
+    // Save the reset count to preferences
+    preferences.putUInt("bale_count_year", bale_count_year);
+    
+    Serial.println("Yearly bale count reset to 0");
+}
+
+void resetFlakeCount() {
+    flake_count = 0;
+    flake_count_prev1 = 0;
+    flake_count_prev2 = 0;
+    updateFlakeCountDisplay();
+    updateFlakeCountPrev1Display();
+    updateFlakeCountPrev2Display();
+    
+    // Save the reset counts to preferences
+    preferences.putUInt("flake_count", flake_count);
+    preferences.putUInt("flake_prev1", flake_count_prev1);
+    preferences.putUInt("flake_prev2", flake_count_prev2);
+    
+    Serial.println("All flake counts reset to 0");
+    Serial.println("All flake counts saved to preferences");
+}
+
+// Debug function to verify preferences are working
+void debugPreferences() {
+    Serial.println("=== PREFERENCES DEBUG ===");
+    Serial.print("Current flake_count: ");
+    Serial.println(flake_count);
+    Serial.print("Current flake_count_prev1: ");
+    Serial.println(flake_count_prev1);
+    Serial.print("Current flake_count_prev2: ");
+    Serial.println(flake_count_prev2);
+    
+    // Read what's actually stored in preferences
+    unsigned int stored_current = preferences.getUInt("flake_count", 999);
+    unsigned int stored_prev1 = preferences.getUInt("flake_prev1", 999);
+    unsigned int stored_prev2 = preferences.getUInt("flake_prev2", 999);
+    
+    Serial.print("Stored flake_count: ");
+    Serial.println(stored_current);
+    Serial.print("Stored flake_count_prev1: ");
+    Serial.println(stored_prev1);
+    Serial.print("Stored flake_count_prev2: ");
+    Serial.println(stored_prev2);
+    Serial.println("=========================");
+}
+}
 
 /*Read the touchpad*/
 void my_touchpad_read(lv_indev_drv_t *indev_drv, lv_indev_data_t *data)
@@ -153,6 +314,33 @@ void setup()
     Serial.println(LVGL_Arduino);
     Serial.println("I am LVGL_Arduino");
 
+    // Open Preferences with bale-nums namespace
+    preferences.begin("bale-nums", false);
+    
+    // Load saved bale count from preferences
+    bale_count = preferences.getUInt("bale_count", 0);  // Default to 0 if no saved value
+    Serial.print("Loaded bale count from preferences: ");
+    Serial.println(bale_count);
+    
+    // Load saved yearly bale count from preferences
+    bale_count_year = preferences.getUInt("bale_count_year", 0);  // Default to 0 if no saved value
+    Serial.print("Loaded yearly bale count from preferences: ");
+    Serial.println(bale_count_year);
+    
+    // Load saved flake count from preferences
+    flake_count = preferences.getUInt("flake_count", 0);  // Default to 0 if no saved value
+    Serial.print("Loaded flake count from preferences: ");
+    Serial.println(flake_count);
+    
+    // Load saved previous flake counts from preferences
+    flake_count_prev1 = preferences.getUInt("flake_prev1", 0);
+    Serial.print("Loaded flake count prev1 from preferences: ");
+    Serial.println(flake_count_prev1);
+    
+    flake_count_prev2 = preferences.getUInt("flake_prev2", 0);
+    Serial.print("Loaded flake count prev2 from preferences: ");
+    Serial.println(flake_count_prev2);
+
     lv_init();
 
 #if LV_USE_LOG != 0
@@ -170,6 +358,12 @@ void setup()
     // Initialize the backlight pin for PWM control and set initial brightness
     pinMode(21, OUTPUT);  // TFT_BL pin
     analogWrite(21, 204); // Set initial brightness to 80% (204/255)
+    
+    // Initialize GPIO 35 as input with pull-up resistor for sensor
+    pinMode(BALE_SENSOR_PIN, INPUT_PULLUP);
+    
+    // Initialize GPIO 22 as input with pull-up resistor for flake sensor
+    pinMode(FLAKE_SENSOR_PIN, INPUT_PULLUP);
 
     lv_disp_draw_buf_init(&draw_buf, buf, NULL, screenWidth * screenHeight / 10);
 
@@ -197,11 +391,64 @@ void setup()
 
     ui_init();
 
+    // Update the bale count display with the loaded value
+    updateBaleCountDisplay();
+    
+    // Update the yearly bale count display with the loaded value
+    updateBaleCountYearDisplay();
+    
+    // Update the flake count display with the loaded value
+    updateFlakeCountDisplay();
+    
+    // Update the previous flake count displays with the loaded values
+    updateFlakeCountPrev1Display();
+    updateFlakeCountPrev2Display();
+
+    // Debug preferences to verify they're working
+    debugPreferences();
+
     Serial.println("Setup done");
 }
 
 void loop()
 {
     lv_timer_handler(); /* let the GUI do its work */
+    
+    // Read bale sensor state and update display (matching old code behavior)
+    static bool last_sensor_state = true;  // Start with HIGH (pull-up default)
+    bool current_sensor_state = digitalRead(BALE_SENSOR_PIN);
+    
+    // Update bale sensor display and count when state changes
+    if (current_sensor_state != last_sensor_state) {
+        if (current_sensor_state == LOW) {  // Sensor triggered (active LOW)
+            Serial.println("Bale sensor triggered: ON");
+        } else {
+            Serial.println("Bale sensor state: OFF");
+            
+            // Increment counter when sensor goes from ON (LOW) to OFF (HIGH) - end of detection
+            incrementBaleCount();
+            Serial.println("Bale detected by sensor!");
+        }
+        last_sensor_state = current_sensor_state;
+    }
+    
+    // Read flake sensor state and update display
+    static bool last_flake_sensor_state = true;  // Start with HIGH (pull-up default)
+    bool current_flake_sensor_state = digitalRead(FLAKE_SENSOR_PIN);
+    
+    // Update flake sensor display and count when state changes
+    if (current_flake_sensor_state != last_flake_sensor_state) {
+        if (current_flake_sensor_state == LOW) {  // Sensor triggered (active LOW)
+            Serial.println("Flake sensor triggered: ON");
+        } else {
+            Serial.println("Flake sensor state: OFF");
+            
+            // Increment counter when sensor goes from ON (LOW) to OFF (HIGH) - end of detection
+            incrementFlakeCount();
+            Serial.println("Flake detected by sensor!");
+        }
+        last_flake_sensor_state = current_flake_sensor_state;
+    }
+    
     delay(5);
 }

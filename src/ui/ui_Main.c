@@ -5,14 +5,27 @@
 
 #include "ui.h"
 
+lv_obj_t * uiCYD_CloseImgButton;
+lv_obj_t * uiCYD_SettingsTitleLabel;
+lv_obj_t * uiCYD_YearCountButtonText;
+lv_obj_t * uiCYD_YearCountResetBtn;
+lv_obj_t * uiCYD_BaleCountButtonText;
+lv_obj_t * uiCYD_BaleCountResetBtn;
+lv_obj_t * uiCYD_FlakeCountButtonText;
+lv_obj_t * uiCYD_FlakeCountResetBtn;
+lv_obj_t * uiCYD_SettingsPanel;
+lv_obj_t * uiCYD_SettingsImgButton;
+lv_obj_t * uiCYD_BaleCountHour;
 lv_obj_t * uiCYD_BaleCountHourContainer;
+lv_obj_t * uiCYD_BaleCountYear;
 lv_obj_t * uiCYD_BaleCountYearContainer;
 lv_obj_t * uiCYD_BaleCount;
-lv_obj_t * uiCYD_CountButtonText;
-lv_obj_t * uiCYD_CountIncrement;
 lv_obj_t * uiCYD_BaleCountLabel;
 lv_obj_t * uiCYD_BaleCountImage;
 lv_obj_t * uiCYD_BaleCountContainer;
+lv_obj_t * uiCYD_FlakeCountPrev2;
+lv_obj_t * uiCYD_FlakeCountPrev1;
+lv_obj_t * uiCYD_FlakeCountCurrent;
 lv_obj_t * uiCYD_FlakeCount1;
 lv_obj_t * uiCYD_FlakeCountImage;
 lv_obj_t * uiCYD_FlakeContainer;
@@ -20,27 +33,89 @@ lv_obj_t * uiCYD_Main;
 lv_obj_t * ui_Main = NULL;
 lv_obj_t * ui_FlakeContainer = NULL;
 lv_obj_t * ui_FlakeCountImage = NULL;
-lv_obj_t * ui_FlakeCountNum = NULL;
+lv_obj_t * ui_FlakeCountLabel = NULL;
+lv_obj_t * ui_FlakeCountCurrent = NULL;
+lv_obj_t * ui_FlakeCountPrev1 = NULL;
+lv_obj_t * ui_FlakeCountPrev2 = NULL;
+lv_obj_t * ui_FlakeSlash1 = NULL;
+lv_obj_t * ui_FlakeSlash2 = NULL;
 lv_obj_t * ui_BaleCountContainer = NULL;
 lv_obj_t * ui_BaleCountImage = NULL;
 lv_obj_t * ui_BaleCountLabel = NULL;
-lv_obj_t * ui_CountIncrement = NULL;
-lv_obj_t * ui_CountButtonText = NULL;
 lv_obj_t * ui_BaleCount = NULL;
 lv_obj_t * ui_BaleCountYearContainer = NULL;
 lv_obj_t * ui_BaleCountImage1 = NULL;
-lv_obj_t * ui_BaleCountNum1 = NULL;
+lv_obj_t * ui_BaleCountYearLabel = NULL;
+lv_obj_t * ui_BaleCountYear = NULL;
 lv_obj_t * ui_BaleCountHourContainer = NULL;
 lv_obj_t * ui_FlakeCountImage1 = NULL;
 lv_obj_t * ui_FlakeCountNum1 = NULL;
-lv_obj_t * ui_ImgButton1 = NULL;
+lv_obj_t * ui_BaleCountHour = NULL;
+lv_obj_t * ui_SettingsImgButton = NULL;
+lv_obj_t * ui_SettingsPopupPanel = NULL;
+lv_obj_t * ui_TabView1 = NULL;
+lv_obj_t * ui_ResetCountsPage = NULL;
+lv_obj_t * ui_FlakeCountResetBtn = NULL;
+lv_obj_t * ui_FlakeCountButtonText = NULL;
+lv_obj_t * ui_BaleCountResetBtn = NULL;
+lv_obj_t * ui_BaleCountButtonText = NULL;
+lv_obj_t * ui_YearCountResetBtn = NULL;
+lv_obj_t * ui_YearCountButtonText = NULL;
+lv_obj_t * ui_DateTimePage = NULL;
+lv_obj_t * ui_SettingsTitleLabel = NULL;
+lv_obj_t * ui_CloseImgButton = NULL;
 // event funtions
-void ui_event_CountIncrement(lv_event_t * e)
+void ui_event_SettingsImgButton(lv_event_t * e)
 {
     lv_event_code_t event_code = lv_event_get_code(e);
 
     if(event_code == LV_EVENT_CLICKED) {
-        handleIncrementBaleCountBtnClick(e);
+        _ui_flag_modify(ui_SettingsPopupPanel, LV_OBJ_FLAG_HIDDEN, _UI_MODIFY_FLAG_TOGGLE);
+    }
+}
+
+void ui_event_FlakeCountResetBtn(lv_event_t * e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+
+    if(event_code == LV_EVENT_CLICKED) {
+        handleResetFlakeCountBtnClick(e);
+    }
+}
+
+void ui_event_FlakeCountButtonText(lv_event_t * e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+
+    if(event_code == LV_EVENT_CLICKED) {
+        (e);
+    }
+}
+
+void ui_event_BaleCountResetBtn(lv_event_t * e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+
+    if(event_code == LV_EVENT_CLICKED) {
+        handleResetBaleCountBtnClick(e);
+    }
+}
+
+void ui_event_YearCountResetBtn(lv_event_t * e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+
+    if(event_code == LV_EVENT_CLICKED) {
+        handleResetBaleYearCountBtnClick(e);
+    }
+}
+
+void ui_event_CloseImgButton(lv_event_t * e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+
+    if(event_code == LV_EVENT_CLICKED) {
+        _ui_flag_modify(ui_SettingsPopupPanel, LV_OBJ_FLAG_HIDDEN, _UI_MODIFY_FLAG_ADD);
     }
 }
 
@@ -64,19 +139,65 @@ void ui_Main_screen_init(void)
     lv_img_set_src(ui_FlakeCountImage, &ui_img_hay_flake_better_60tall_png);
     lv_obj_set_width(ui_FlakeCountImage, LV_SIZE_CONTENT);   /// 64
     lv_obj_set_height(ui_FlakeCountImage, LV_SIZE_CONTENT);    /// 45
-    lv_obj_set_x(ui_FlakeCountImage, 10);
+    lv_obj_set_x(ui_FlakeCountImage, 7);
     lv_obj_set_y(ui_FlakeCountImage, 0);
     lv_obj_set_align(ui_FlakeCountImage, LV_ALIGN_LEFT_MID);
     lv_obj_add_flag(ui_FlakeCountImage, LV_OBJ_FLAG_ADV_HITTEST);     /// Flags
     lv_obj_clear_flag(ui_FlakeCountImage, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
 
-    ui_FlakeCountNum = lv_label_create(ui_FlakeContainer);
-    lv_obj_set_width(ui_FlakeCountNum, LV_SIZE_CONTENT);   /// 2
-    lv_obj_set_height(ui_FlakeCountNum, LV_SIZE_CONTENT);    /// 2
-    lv_obj_set_x(ui_FlakeCountNum, 22);
-    lv_obj_set_y(ui_FlakeCountNum, 0);
-    lv_obj_set_align(ui_FlakeCountNum, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_FlakeCountNum, "Flake Count");
+    ui_FlakeCountLabel = lv_label_create(ui_FlakeContainer);
+    lv_obj_set_width(ui_FlakeCountLabel, LV_SIZE_CONTENT);   /// 2
+    lv_obj_set_height(ui_FlakeCountLabel, LV_SIZE_CONTENT);    /// 2
+    lv_obj_set_x(ui_FlakeCountLabel, -20);
+    lv_obj_set_y(ui_FlakeCountLabel, 0);
+    lv_obj_set_align(ui_FlakeCountLabel, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_FlakeCountLabel, "Flake Count");
+    lv_obj_set_style_text_font(ui_FlakeCountLabel, &lv_font_montserrat_18, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    ui_FlakeCountCurrent = lv_label_create(ui_FlakeContainer);
+    lv_obj_set_width(ui_FlakeCountCurrent, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_FlakeCountCurrent, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_FlakeCountCurrent, 60);
+    lv_obj_set_y(ui_FlakeCountCurrent, 0);
+    lv_obj_set_align(ui_FlakeCountCurrent, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_FlakeCountCurrent, "---");
+    lv_obj_set_style_text_font(ui_FlakeCountCurrent, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    ui_FlakeCountPrev1 = lv_label_create(ui_FlakeContainer);
+    lv_obj_set_width(ui_FlakeCountPrev1, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_FlakeCountPrev1, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_FlakeCountPrev1, 94);
+    lv_obj_set_y(ui_FlakeCountPrev1, 0);
+    lv_obj_set_align(ui_FlakeCountPrev1, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_FlakeCountPrev1, "---");
+    lv_obj_set_style_text_font(ui_FlakeCountPrev1, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    ui_FlakeCountPrev2 = lv_label_create(ui_FlakeContainer);
+    lv_obj_set_width(ui_FlakeCountPrev2, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_FlakeCountPrev2, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_FlakeCountPrev2, 130);
+    lv_obj_set_y(ui_FlakeCountPrev2, 0);
+    lv_obj_set_align(ui_FlakeCountPrev2, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_FlakeCountPrev2, "---");
+    lv_obj_set_style_text_font(ui_FlakeCountPrev2, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    ui_FlakeSlash1 = lv_label_create(ui_FlakeContainer);
+    lv_obj_set_width(ui_FlakeSlash1, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_FlakeSlash1, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_FlakeSlash1, 77);
+    lv_obj_set_y(ui_FlakeSlash1, 0);
+    lv_obj_set_align(ui_FlakeSlash1, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_FlakeSlash1, "/");
+    lv_obj_set_style_text_font(ui_FlakeSlash1, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    ui_FlakeSlash2 = lv_label_create(ui_FlakeContainer);
+    lv_obj_set_width(ui_FlakeSlash2, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_FlakeSlash2, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_FlakeSlash2, 112);
+    lv_obj_set_y(ui_FlakeSlash2, 0);
+    lv_obj_set_align(ui_FlakeSlash2, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_FlakeSlash2, "/");
+    lv_obj_set_style_text_font(ui_FlakeSlash2, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_BaleCountContainer = lv_obj_create(ui_Main);
     lv_obj_remove_style_all(ui_BaleCountContainer);
@@ -100,37 +221,18 @@ void ui_Main_screen_init(void)
     ui_BaleCountLabel = lv_label_create(ui_BaleCountContainer);
     lv_obj_set_width(ui_BaleCountLabel, LV_SIZE_CONTENT);   /// 2
     lv_obj_set_height(ui_BaleCountLabel, LV_SIZE_CONTENT);    /// 2
-    lv_obj_set_x(ui_BaleCountLabel, 22);
-    lv_obj_set_y(ui_BaleCountLabel, 0);
     lv_obj_set_align(ui_BaleCountLabel, LV_ALIGN_CENTER);
     lv_label_set_text(ui_BaleCountLabel, "Bale Count");
-
-    ui_CountIncrement = lv_btn_create(ui_BaleCountContainer);
-    lv_obj_set_width(ui_CountIncrement, 40);
-    lv_obj_set_height(ui_CountIncrement, 40);
-    lv_obj_set_x(ui_CountIncrement, 110);
-    lv_obj_set_y(ui_CountIncrement, 0);
-    lv_obj_set_align(ui_CountIncrement, LV_ALIGN_CENTER);
-    lv_obj_set_style_bg_color(ui_CountIncrement, lv_color_hex(0xFFEA83), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_opa(ui_CountIncrement, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_text_color(ui_CountIncrement, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_text_opa(ui_CountIncrement, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-
-    ui_CountButtonText = lv_label_create(ui_CountIncrement);
-    lv_obj_set_width(ui_CountButtonText, LV_SIZE_CONTENT);   /// 10
-    lv_obj_set_height(ui_CountButtonText, LV_SIZE_CONTENT);    /// 10
-    lv_obj_set_align(ui_CountButtonText, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_CountButtonText, "+");
-    lv_obj_set_style_text_color(ui_CountButtonText, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_text_opa(ui_CountButtonText, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_BaleCountLabel, &lv_font_montserrat_18, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_BaleCount = lv_label_create(ui_BaleCountContainer);
     lv_obj_set_width(ui_BaleCount, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_BaleCount, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_BaleCount, -50);
+    lv_obj_set_x(ui_BaleCount, -32);
     lv_obj_set_y(ui_BaleCount, 0);
-    lv_obj_set_align(ui_BaleCount, LV_ALIGN_CENTER);
+    lv_obj_set_align(ui_BaleCount, LV_ALIGN_RIGHT_MID);
     lv_label_set_text(ui_BaleCount, "---");
+    lv_obj_set_style_text_font(ui_BaleCount, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_BaleCountYearContainer = lv_obj_create(ui_Main);
     lv_obj_remove_style_all(ui_BaleCountYearContainer);
@@ -151,13 +253,24 @@ void ui_Main_screen_init(void)
     lv_obj_add_flag(ui_BaleCountImage1, LV_OBJ_FLAG_ADV_HITTEST);     /// Flags
     lv_obj_clear_flag(ui_BaleCountImage1, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
 
-    ui_BaleCountNum1 = lv_label_create(ui_BaleCountYearContainer);
-    lv_obj_set_width(ui_BaleCountNum1, LV_SIZE_CONTENT);   /// 2
-    lv_obj_set_height(ui_BaleCountNum1, LV_SIZE_CONTENT);    /// 2
-    lv_obj_set_x(ui_BaleCountNum1, 52);
-    lv_obj_set_y(ui_BaleCountNum1, 0);
-    lv_obj_set_align(ui_BaleCountNum1, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_BaleCountNum1, "Bale Count per Year");
+    ui_BaleCountYearLabel = lv_label_create(ui_BaleCountYearContainer);
+    lv_obj_set_width(ui_BaleCountYearLabel, LV_SIZE_CONTENT);   /// 2
+    lv_obj_set_height(ui_BaleCountYearLabel, LV_SIZE_CONTENT);    /// 2
+    lv_obj_set_x(ui_BaleCountYearLabel, 1);
+    lv_obj_set_y(ui_BaleCountYearLabel, 0);
+    lv_obj_set_align(ui_BaleCountYearLabel, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_BaleCountYearLabel, "Year Bale Count");
+    lv_obj_set_style_text_align(ui_BaleCountYearLabel, LV_TEXT_ALIGN_LEFT, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_BaleCountYearLabel, &lv_font_montserrat_18, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    ui_BaleCountYear = lv_label_create(ui_BaleCountYearContainer);
+    lv_obj_set_width(ui_BaleCountYear, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_BaleCountYear, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_BaleCountYear, -32);
+    lv_obj_set_y(ui_BaleCountYear, 0);
+    lv_obj_set_align(ui_BaleCountYear, LV_ALIGN_RIGHT_MID);
+    lv_label_set_text(ui_BaleCountYear, "---");
+    lv_obj_set_style_text_font(ui_BaleCountYear, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_BaleCountHourContainer = lv_obj_create(ui_Main);
     lv_obj_remove_style_all(ui_BaleCountHourContainer);
@@ -172,8 +285,6 @@ void ui_Main_screen_init(void)
     lv_img_set_src(ui_FlakeCountImage1, &ui_img_balesperhour_102tall_png);
     lv_obj_set_width(ui_FlakeCountImage1, LV_SIZE_CONTENT);   /// 64
     lv_obj_set_height(ui_FlakeCountImage1, LV_SIZE_CONTENT);    /// 45
-    lv_obj_set_x(ui_FlakeCountImage1, 10);
-    lv_obj_set_y(ui_FlakeCountImage1, 0);
     lv_obj_set_align(ui_FlakeCountImage1, LV_ALIGN_LEFT_MID);
     lv_obj_add_flag(ui_FlakeCountImage1, LV_OBJ_FLAG_ADV_HITTEST);     /// Flags
     lv_obj_clear_flag(ui_FlakeCountImage1, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
@@ -181,32 +292,167 @@ void ui_Main_screen_init(void)
     ui_FlakeCountNum1 = lv_label_create(ui_BaleCountHourContainer);
     lv_obj_set_width(ui_FlakeCountNum1, LV_SIZE_CONTENT);   /// 2
     lv_obj_set_height(ui_FlakeCountNum1, LV_SIZE_CONTENT);    /// 2
-    lv_obj_set_x(ui_FlakeCountNum1, 35);
-    lv_obj_set_y(ui_FlakeCountNum1, 0);
     lv_obj_set_align(ui_FlakeCountNum1, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_FlakeCountNum1, "Bales per Hour");
+    lv_label_set_text(ui_FlakeCountNum1, "Bales/hr");
+    lv_obj_set_style_text_font(ui_FlakeCountNum1, &lv_font_montserrat_18, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    ui_ImgButton1 = lv_imgbtn_create(ui_Main);
-    lv_imgbtn_set_src(ui_ImgButton1, LV_IMGBTN_STATE_RELEASED, NULL, &ui_img_setting_white_png, NULL);
-    lv_obj_set_width(ui_ImgButton1, 32);
-    lv_obj_set_height(ui_ImgButton1, 33);
-    lv_obj_set_x(ui_ImgButton1, -5);
-    lv_obj_set_y(ui_ImgButton1, -5);
-    lv_obj_set_align(ui_ImgButton1, LV_ALIGN_BOTTOM_RIGHT);
+    ui_BaleCountHour = lv_label_create(ui_BaleCountHourContainer);
+    lv_obj_set_width(ui_BaleCountHour, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_BaleCountHour, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_BaleCountHour, -60);
+    lv_obj_set_y(ui_BaleCountHour, 0);
+    lv_obj_set_align(ui_BaleCountHour, LV_ALIGN_RIGHT_MID);
+    lv_label_set_text(ui_BaleCountHour, "---");
+    lv_obj_set_style_text_font(ui_BaleCountHour, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    lv_obj_add_event_cb(ui_CountIncrement, ui_event_CountIncrement, LV_EVENT_ALL, NULL);
+    ui_SettingsImgButton = lv_imgbtn_create(ui_Main);
+    lv_imgbtn_set_src(ui_SettingsImgButton, LV_IMGBTN_STATE_RELEASED, NULL, &ui_img_setting_white_png, NULL);
+    lv_imgbtn_set_src(ui_SettingsImgButton, LV_IMGBTN_STATE_PRESSED, NULL, &ui_img_setting_white_png, NULL);
+    lv_obj_set_width(ui_SettingsImgButton, 32);
+    lv_obj_set_height(ui_SettingsImgButton, 33);
+    lv_obj_set_x(ui_SettingsImgButton, -5);
+    lv_obj_set_y(ui_SettingsImgButton, -5);
+    lv_obj_set_align(ui_SettingsImgButton, LV_ALIGN_BOTTOM_RIGHT);
+    lv_obj_set_style_img_recolor(ui_SettingsImgButton, lv_color_hex(0xFFEA83), LV_PART_MAIN | LV_STATE_PRESSED);
+    lv_obj_set_style_img_recolor_opa(ui_SettingsImgButton, 0, LV_PART_MAIN | LV_STATE_PRESSED);
+
+    ui_SettingsPopupPanel = lv_obj_create(ui_Main);
+    lv_obj_set_width(ui_SettingsPopupPanel, 285);
+    lv_obj_set_height(ui_SettingsPopupPanel, 203);
+    lv_obj_set_align(ui_SettingsPopupPanel, LV_ALIGN_CENTER);
+    lv_obj_add_flag(ui_SettingsPopupPanel, LV_OBJ_FLAG_HIDDEN);     /// Flags
+    lv_obj_clear_flag(ui_SettingsPopupPanel, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+
+    ui_TabView1 = lv_tabview_create(ui_SettingsPopupPanel, LV_DIR_BOTTOM, 24);
+    lv_obj_set_width(ui_TabView1, 277);
+    lv_obj_set_height(ui_TabView1, 169);
+    lv_obj_set_x(ui_TabView1, 0);
+    lv_obj_set_y(ui_TabView1, 13);
+    lv_obj_set_align(ui_TabView1, LV_ALIGN_CENTER);
+    lv_obj_clear_flag(ui_TabView1, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+    lv_obj_set_style_bg_color(ui_TabView1, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(ui_TabView1, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_color(ui_TabView1, lv_color_hex(0x6AC27B), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_opa(ui_TabView1, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    lv_obj_set_style_text_color(lv_tabview_get_tab_btns(ui_TabView1), lv_color_hex(0x6AC27B),
+                                LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_opa(lv_tabview_get_tab_btns(ui_TabView1), 255,  LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    lv_obj_set_style_text_color(lv_tabview_get_tab_btns(ui_TabView1), lv_color_hex(0x6AC27B),
+                                LV_PART_ITEMS | LV_STATE_CHECKED);
+    lv_obj_set_style_text_opa(lv_tabview_get_tab_btns(ui_TabView1), 255,  LV_PART_ITEMS | LV_STATE_CHECKED);
+    lv_obj_set_style_bg_color(lv_tabview_get_tab_btns(ui_TabView1), lv_color_hex(0x6AC27B),
+                              LV_PART_ITEMS | LV_STATE_CHECKED);
+    lv_obj_set_style_bg_opa(lv_tabview_get_tab_btns(ui_TabView1), 30,  LV_PART_ITEMS | LV_STATE_CHECKED);
+    lv_obj_set_style_border_color(lv_tabview_get_tab_btns(ui_TabView1), lv_color_hex(0x6AC27B),
+                                  LV_PART_ITEMS | LV_STATE_CHECKED);
+    lv_obj_set_style_border_opa(lv_tabview_get_tab_btns(ui_TabView1), 255,  LV_PART_ITEMS | LV_STATE_CHECKED);
+
+    ui_ResetCountsPage = lv_tabview_add_tab(ui_TabView1, "Reset Counts");
+
+    ui_FlakeCountResetBtn = lv_btn_create(ui_ResetCountsPage);
+    lv_obj_set_width(ui_FlakeCountResetBtn, 120);
+    lv_obj_set_height(ui_FlakeCountResetBtn, 55);
+    lv_obj_set_style_bg_color(ui_FlakeCountResetBtn, lv_color_hex(0x6AC27B), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(ui_FlakeCountResetBtn, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_color(ui_FlakeCountResetBtn, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_opa(ui_FlakeCountResetBtn, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    ui_FlakeCountButtonText = lv_label_create(ui_FlakeCountResetBtn);
+    lv_obj_set_width(ui_FlakeCountButtonText, LV_SIZE_CONTENT);   /// 10
+    lv_obj_set_height(ui_FlakeCountButtonText, LV_SIZE_CONTENT);    /// 10
+    lv_obj_set_align(ui_FlakeCountButtonText, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_FlakeCountButtonText, "Reset Flake\nCount");
+    lv_obj_set_style_text_color(ui_FlakeCountButtonText, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_opa(ui_FlakeCountButtonText, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_align(ui_FlakeCountButtonText, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    ui_BaleCountResetBtn = lv_btn_create(ui_ResetCountsPage);
+    lv_obj_set_width(ui_BaleCountResetBtn, 120);
+    lv_obj_set_height(ui_BaleCountResetBtn, 55);
+    lv_obj_set_align(ui_BaleCountResetBtn, LV_ALIGN_TOP_RIGHT);
+    lv_obj_set_style_bg_color(ui_BaleCountResetBtn, lv_color_hex(0x6AC27B), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(ui_BaleCountResetBtn, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_color(ui_BaleCountResetBtn, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_opa(ui_BaleCountResetBtn, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    ui_BaleCountButtonText = lv_label_create(ui_BaleCountResetBtn);
+    lv_obj_set_width(ui_BaleCountButtonText, LV_SIZE_CONTENT);   /// 10
+    lv_obj_set_height(ui_BaleCountButtonText, LV_SIZE_CONTENT);    /// 10
+    lv_obj_set_align(ui_BaleCountButtonText, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_BaleCountButtonText, "Reset Bale\nCount");
+    lv_obj_set_style_text_color(ui_BaleCountButtonText, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_opa(ui_BaleCountButtonText, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_align(ui_BaleCountButtonText, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    ui_YearCountResetBtn = lv_btn_create(ui_ResetCountsPage);
+    lv_obj_set_width(ui_YearCountResetBtn, 120);
+    lv_obj_set_height(ui_YearCountResetBtn, 55);
+    lv_obj_set_align(ui_YearCountResetBtn, LV_ALIGN_BOTTOM_MID);
+    lv_obj_set_style_bg_color(ui_YearCountResetBtn, lv_color_hex(0x6AC27B), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(ui_YearCountResetBtn, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_color(ui_YearCountResetBtn, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_opa(ui_YearCountResetBtn, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    ui_YearCountButtonText = lv_label_create(ui_YearCountResetBtn);
+    lv_obj_set_width(ui_YearCountButtonText, LV_SIZE_CONTENT);   /// 10
+    lv_obj_set_height(ui_YearCountButtonText, LV_SIZE_CONTENT);    /// 10
+    lv_obj_set_align(ui_YearCountButtonText, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_YearCountButtonText, "Reset Year\nCount");
+    lv_obj_set_style_text_color(ui_YearCountButtonText, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_opa(ui_YearCountButtonText, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_align(ui_YearCountButtonText, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    ui_DateTimePage = lv_tabview_add_tab(ui_TabView1, "Date & Time");
+
+    ui_SettingsTitleLabel = lv_label_create(ui_SettingsPopupPanel);
+    lv_obj_set_width(ui_SettingsTitleLabel, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_SettingsTitleLabel, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_SettingsTitleLabel, 0);
+    lv_obj_set_y(ui_SettingsTitleLabel, -80);
+    lv_obj_set_align(ui_SettingsTitleLabel, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_SettingsTitleLabel, "Settings");
+
+    ui_CloseImgButton = lv_imgbtn_create(ui_SettingsPopupPanel);
+    lv_imgbtn_set_src(ui_CloseImgButton, LV_IMGBTN_STATE_RELEASED, NULL, &ui_img_close_btn_white_png, NULL);
+    lv_obj_set_width(ui_CloseImgButton, 24);
+    lv_obj_set_height(ui_CloseImgButton, 24);
+    lv_obj_set_x(ui_CloseImgButton, 5);
+    lv_obj_set_y(ui_CloseImgButton, -156);
+    lv_obj_set_align(ui_CloseImgButton, LV_ALIGN_BOTTOM_RIGHT);
+
+    lv_obj_add_event_cb(ui_SettingsImgButton, ui_event_SettingsImgButton, LV_EVENT_ALL, NULL);
+    lv_obj_add_event_cb(ui_FlakeCountButtonText, ui_event_FlakeCountButtonText, LV_EVENT_ALL, NULL);
+    lv_obj_add_event_cb(ui_FlakeCountResetBtn, ui_event_FlakeCountResetBtn, LV_EVENT_ALL, NULL);
+    lv_obj_add_event_cb(ui_BaleCountResetBtn, ui_event_BaleCountResetBtn, LV_EVENT_ALL, NULL);
+    lv_obj_add_event_cb(ui_YearCountResetBtn, ui_event_YearCountResetBtn, LV_EVENT_ALL, NULL);
+    lv_obj_add_event_cb(ui_CloseImgButton, ui_event_CloseImgButton, LV_EVENT_ALL, NULL);
     uiCYD_Main = ui_Main;
     uiCYD_FlakeContainer = ui_FlakeContainer;
     uiCYD_FlakeCountImage = ui_FlakeCountImage;
-    uiCYD_FlakeCount1 = ui_FlakeCountNum;
+    uiCYD_FlakeCount1 = ui_FlakeCountLabel;
+    uiCYD_FlakeCountCurrent = ui_FlakeCountCurrent;
+    uiCYD_FlakeCountPrev1 = ui_FlakeCountPrev1;
+    uiCYD_FlakeCountPrev2 = ui_FlakeCountPrev2;
     uiCYD_BaleCountContainer = ui_BaleCountContainer;
     uiCYD_BaleCountImage = ui_BaleCountImage;
     uiCYD_BaleCountLabel = ui_BaleCountLabel;
-    uiCYD_CountIncrement = ui_CountIncrement;
-    uiCYD_CountButtonText = ui_CountButtonText;
     uiCYD_BaleCount = ui_BaleCount;
     uiCYD_BaleCountYearContainer = ui_BaleCountYearContainer;
+    uiCYD_BaleCountYear = ui_BaleCountYear;
     uiCYD_BaleCountHourContainer = ui_BaleCountHourContainer;
+    uiCYD_BaleCountHour = ui_BaleCountHour;
+    uiCYD_SettingsImgButton = ui_SettingsImgButton;
+    uiCYD_SettingsPanel = ui_SettingsPopupPanel;
+    uiCYD_FlakeCountResetBtn = ui_FlakeCountResetBtn;
+    uiCYD_FlakeCountButtonText = ui_FlakeCountButtonText;
+    uiCYD_BaleCountResetBtn = ui_BaleCountResetBtn;
+    uiCYD_BaleCountButtonText = ui_BaleCountButtonText;
+    uiCYD_YearCountResetBtn = ui_YearCountResetBtn;
+    uiCYD_YearCountButtonText = ui_YearCountButtonText;
+    uiCYD_SettingsTitleLabel = ui_SettingsTitleLabel;
+    uiCYD_CloseImgButton = ui_CloseImgButton;
 
 }
 
@@ -222,27 +468,57 @@ void ui_Main_screen_destroy(void)
     uiCYD_FlakeCountImage = NULL;
     ui_FlakeCountImage = NULL;
     uiCYD_FlakeCount1 = NULL;
-    ui_FlakeCountNum = NULL;
+    ui_FlakeCountLabel = NULL;
+    uiCYD_FlakeCountCurrent = NULL;
+    ui_FlakeCountCurrent = NULL;
+    uiCYD_FlakeCountPrev1 = NULL;
+    ui_FlakeCountPrev1 = NULL;
+    uiCYD_FlakeCountPrev2 = NULL;
+    ui_FlakeCountPrev2 = NULL;
+    ui_FlakeSlash1 = NULL;
+    ui_FlakeSlash2 = NULL;
     uiCYD_BaleCountContainer = NULL;
     ui_BaleCountContainer = NULL;
     uiCYD_BaleCountImage = NULL;
     ui_BaleCountImage = NULL;
     uiCYD_BaleCountLabel = NULL;
     ui_BaleCountLabel = NULL;
-    uiCYD_CountIncrement = NULL;
-    ui_CountIncrement = NULL;
-    uiCYD_CountButtonText = NULL;
-    ui_CountButtonText = NULL;
     uiCYD_BaleCount = NULL;
     ui_BaleCount = NULL;
     uiCYD_BaleCountYearContainer = NULL;
     ui_BaleCountYearContainer = NULL;
     ui_BaleCountImage1 = NULL;
-    ui_BaleCountNum1 = NULL;
+    ui_BaleCountYearLabel = NULL;
+    uiCYD_BaleCountYear = NULL;
+    ui_BaleCountYear = NULL;
     uiCYD_BaleCountHourContainer = NULL;
     ui_BaleCountHourContainer = NULL;
     ui_FlakeCountImage1 = NULL;
     ui_FlakeCountNum1 = NULL;
-    ui_ImgButton1 = NULL;
+    uiCYD_BaleCountHour = NULL;
+    ui_BaleCountHour = NULL;
+    uiCYD_SettingsImgButton = NULL;
+    ui_SettingsImgButton = NULL;
+    uiCYD_SettingsPanel = NULL;
+    ui_SettingsPopupPanel = NULL;
+    ui_TabView1 = NULL;
+    ui_ResetCountsPage = NULL;
+    uiCYD_FlakeCountResetBtn = NULL;
+    ui_FlakeCountResetBtn = NULL;
+    uiCYD_FlakeCountButtonText = NULL;
+    ui_FlakeCountButtonText = NULL;
+    uiCYD_BaleCountResetBtn = NULL;
+    ui_BaleCountResetBtn = NULL;
+    uiCYD_BaleCountButtonText = NULL;
+    ui_BaleCountButtonText = NULL;
+    uiCYD_YearCountResetBtn = NULL;
+    ui_YearCountResetBtn = NULL;
+    uiCYD_YearCountButtonText = NULL;
+    ui_YearCountButtonText = NULL;
+    ui_DateTimePage = NULL;
+    uiCYD_SettingsTitleLabel = NULL;
+    ui_SettingsTitleLabel = NULL;
+    uiCYD_CloseImgButton = NULL;
+    ui_CloseImgButton = NULL;
 
 }

@@ -7,6 +7,7 @@ SET(SOURCES ui_Main.c
     ui_img_hay_png.c
     ui_img_hay_time_png.c
     ui_img_balesperhour_102tall_png.c
-    ui_img_setting_white_png.c)
+    ui_img_setting_white_png.c
+    ui_img_close_btn_white_png.c)
 
 add_library(ui ${SOURCES})

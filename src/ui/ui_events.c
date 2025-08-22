@@ -5,7 +5,22 @@
 
 #include "ui.h"
 
-void handleIncrementBaleCountBtnClick(lv_event_t * e)
+// Functions are defined in main.cpp with C linkage
+void resetFlakeCount();
+void resetBaleCount();
+void resetBaleCountYear();
+
+void handleResetFlakeCountBtnClick(lv_event_t * e)
 {
-	// Your code here
+	resetFlakeCount();
+}
+
+void handleResetBaleCountBtnClick(lv_event_t * e)
+{
+	resetBaleCount();
+}
+
+void handleResetBaleYearCountBtnClick(lv_event_t * e)
+{
+	resetBaleCountYear();
 }

@@ -10,7 +10,9 @@
 extern "C" {
 #endif
 
-void handleIncrementBaleCountBtnClick(lv_event_t * e);
+void handleResetFlakeCountBtnClick(lv_event_t * e);
+void handleResetBaleCountBtnClick(lv_event_t * e);
+void handleResetBaleYearCountBtnClick(lv_event_t * e);
 
 #ifdef __cplusplus
 } /*extern "C"*/

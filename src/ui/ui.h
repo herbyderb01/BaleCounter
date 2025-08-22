@@ -29,6 +29,7 @@ LV_IMG_DECLARE(ui_img_hay_png);    // assets/hay.png
 LV_IMG_DECLARE(ui_img_hay_time_png);    // assets/hay_time.png
 LV_IMG_DECLARE(ui_img_balesperhour_102tall_png);    // assets/balesperhour_102tall.png
 LV_IMG_DECLARE(ui_img_setting_white_png);    // assets/setting_white.png
+LV_IMG_DECLARE(ui_img_close_btn_white_png);    // assets/close_btn_white.png
 
 // UI INIT
 void ui_init(void);
