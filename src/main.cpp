@@ -44,6 +44,12 @@ int flake_count_prev1 = 0;  // Previous bale's flake count
 int flake_count_prev2 = 0;  // Two bales ago flake count
 Preferences preferences; // Preferences object for saving bale count across reboots
 
+// Bales per hour tracking variables
+unsigned long first_bale_time = 0;  // Time when first bale was detected (in milliseconds)
+unsigned long last_bale_time = 0;   // Time when last bale was detected (in milliseconds)
+int bales_in_session = 0;           // Number of bales counted in current session
+float bales_per_hour = 0.0;         // Calculated bales per hour
+
 // GPIO 35 for binary input sensor (from your old code)
 #define BALE_SENSOR_PIN 35
 // GPIO 22 for flake count sensor
@@ -125,11 +131,73 @@ void updateFlakeCountPrev2Display() {
     lv_label_set_text(uiCYD_FlakeCountPrev2, count_buf);
 }
 
+// Function to update the bales per hour display on the UI
+void updateBalesPerHourDisplay() {
+    char rate_buf[16];
+    if (bales_per_hour == 0.0) {
+        sprintf(rate_buf, "0");
+    } else if (bales_per_hour < 10.0) {
+        sprintf(rate_buf, "%.1f", bales_per_hour);
+    } else {
+        sprintf(rate_buf, "%.0f", bales_per_hour);
+    }
+    lv_label_set_text(uiCYD_BaleCountHour, rate_buf);
+    
+    Serial.print("Updated bales per hour display to: ");
+    Serial.println(rate_buf);
+}
+
+// Function to calculate bales per hour based on current session
+void calculateBalesPerHour() {
+    Serial.print("Calculating bales per hour - Session bales: ");
+    Serial.println(bales_in_session);
+    
+    if (bales_in_session <= 1) {
+        // Need at least 2 bales to calculate a rate
+        bales_per_hour = 0.0;
+        Serial.println("Not enough bales for rate calculation");
+    } else {
+        unsigned long elapsed_time_ms = last_bale_time - first_bale_time;
+        Serial.print("Elapsed time (ms): ");
+        Serial.println(elapsed_time_ms);
+        
+        if (elapsed_time_ms > 0) {
+            // Convert milliseconds to hours and calculate rate
+            float elapsed_hours = elapsed_time_ms / 3600000.0;  // 3600000 ms = 1 hour
+            bales_per_hour = (bales_in_session - 1) / elapsed_hours;  // -1 because we count intervals
+            
+            Serial.print("Elapsed hours: ");
+            Serial.println(elapsed_hours, 6);
+            Serial.print("Calculated rate: ");
+            Serial.println(bales_per_hour);
+        } else {
+            bales_per_hour = 0.0;
+            Serial.println("Zero elapsed time");
+        }
+    }
+    updateBalesPerHourDisplay();
+}
+
 // Function to increment bale count - needs C linkage for ui_events.c
 extern "C" {
 void incrementBaleCount() {
     bale_count++;
     bale_count_year++;  // Also increment yearly count
+    
+    // Track timing for bales per hour calculation
+    unsigned long current_time = millis();
+    
+    if (bales_in_session == 0) {
+        // This is the first bale of the session
+        first_bale_time = current_time;
+        bales_in_session = 1;
+        bales_per_hour = 0.0;  // Can't calculate rate with just one bale
+    } else {
+        // Subsequent bales
+        bales_in_session++;
+        last_bale_time = current_time;
+        calculateBalesPerHour();
+    }
     
     // Shift flake counts: prev2 <- prev1 <- current, then reset current to 0
     flake_count_prev2 = flake_count_prev1;
@@ -153,6 +221,11 @@ void incrementBaleCount() {
     Serial.println(bale_count);
     Serial.print("Yearly bale count incremented to: ");
     Serial.println(bale_count_year);
+    Serial.print("Bales in session: ");
+    Serial.println(bales_in_session);
+    Serial.print("Current rate: ");
+    Serial.print(bales_per_hour);
+    Serial.println(" bales/hour");
     Serial.print("Flake counts shifted - Current: ");
     Serial.print(flake_count);
     Serial.print(", Prev1: ");
@@ -176,9 +249,23 @@ void incrementFlakeCount() {
     Serial.println(flake_count);
 }
 
+// Function to reset the bales per hour session
+void resetBalesPerHourSession() {
+    bales_in_session = 0;
+    bales_per_hour = 0.0;
+    first_bale_time = 0;
+    last_bale_time = 0;
+    updateBalesPerHourDisplay();
+    
+    Serial.println("Bales per hour session reset");
+}
+
 void resetBaleCount() {
     bale_count = 0;
     updateBaleCountDisplay();
+    
+    // Reset the bales per hour session when bale count is reset
+    resetBalesPerHourSession();
     
     // Save the reset count to preferences
     preferences.putUInt("bale_count", bale_count);
@@ -403,6 +490,9 @@ void setup()
     // Update the previous flake count displays with the loaded values
     updateFlakeCountPrev1Display();
     updateFlakeCountPrev2Display();
+    
+    // Initialize the bales per hour display
+    updateBalesPerHourDisplay();
 
     // Debug preferences to verify they're working
     debugPreferences();

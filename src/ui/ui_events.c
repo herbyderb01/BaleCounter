@@ -9,6 +9,7 @@
 void resetFlakeCount();
 void resetBaleCount();
 void resetBaleCountYear();
+void resetBalesPerHourSession();
 
 void handleResetFlakeCountBtnClick(lv_event_t * e)
 {
