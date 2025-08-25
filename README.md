@@ -31,6 +31,10 @@ A bale counting system for ESP32 CYD, touchscreen display, designed for tracking
 
 *Complete wiring schematic showing connections between sensors, power supply, and ESP32*
 
+![PCB Wiring Diagram](images/pcb_wiring_diagram.png)
+
+*Wiring schematic showing how the PCB is laid out*
+
 ## Features
 
 - **Bale Counting**: Track total bales processed
