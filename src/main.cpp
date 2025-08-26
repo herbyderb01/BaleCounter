@@ -436,10 +436,10 @@ void setup()
 
     mySpi.begin(XPT2046_CLK, XPT2046_MISO, XPT2046_MOSI, XPT2046_CS); /* Start second SPI bus for touchscreen */
     ts.begin(mySpi);                                                  /* Touchscreen init */
-    ts.setRotation(1);                                                /* Landscape orientation */
+    ts.setRotation(3);                                                /* Landscape orientation */
 
     tft.begin();        /* TFT init */
-    tft.setRotation(1); // Landscape orientation  1 =  CYC usb on right, 2 for vertical
+    tft.setRotation(3); // Landscape orientation  1 =  CYC usb on right, 2 for vertical, 3 for usb on left
     tft.invertDisplay(1); // Fix inverted colors - if colors are still wrong, try tft.invertDisplay(0)
 
     // Initialize the backlight pin for PWM control and set initial brightness
