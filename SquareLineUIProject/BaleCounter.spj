@@ -3355,25 +3355,25 @@
               {
                 "nid": 1050,
                 "strtype": "IMGBUTTON/Image_disabled",
-                "strval": "",
+                "strval": "-",
                 "InheritedType": 5
               },
               {
                 "nid": 1060,
                 "strtype": "IMGBUTTON/Image_checked_released",
-                "strval": "",
+                "strval": "-",
                 "InheritedType": 5
               },
               {
                 "nid": 1070,
                 "strtype": "IMGBUTTON/Image_checked_pressed",
-                "strval": "",
+                "strval": "-",
                 "InheritedType": 5
               },
               {
                 "nid": 1080,
                 "strtype": "IMGBUTTON/Image_checked_disabled",
-                "strval": "",
+                "strval": "-",
                 "InheritedType": 5
               },
               {
@@ -4998,259 +4998,8 @@
                         "InheritedType": 11
                       }
                     ],
-                    "saved_objtypeKey": "TABPAGE"
-                  },
-                  {
-                    "guid": "GUID71378570-7362S490554218",
-                    "deepid": 67315388,
-                    "dont_export": false,
-                    "locked": false,
-                    "properties": [
-                      {
-                        "nid": 1000474,
-                        "strtype": "TABPAGE/Name",
-                        "strval": "DateTimePage",
-                        "InheritedType": 10
-                      },
-                      {
-                        "nid": 1000475,
-                        "strtype": "TABPAGE/Layout",
-                        "InheritedType": 1
-                      },
-                      {
-                        "Flow": 0,
-                        "Wrap": false,
-                        "Reversed": false,
-                        "MainAlignment": 0,
-                        "CrossAlignment": 0,
-                        "TrackAlignment": 0,
-                        "LayoutType": 0,
-                        "nid": 1000476,
-                        "strtype": "TABPAGE/Layout_type",
-                        "strval": "No_layout",
-                        "InheritedType": 13
-                      },
-                      {
-                        "nid": 1000477,
-                        "flags": 1048576,
-                        "strtype": "TABPAGE/Flags",
-                        "InheritedType": 1
-                      },
-                      {
-                        "nid": 1000478,
-                        "strtype": "TABPAGE/Hidden",
-                        "strval": "False",
-                        "InheritedType": 2
-                      },
-                      {
-                        "nid": 1000479,
-                        "strtype": "TABPAGE/Clickable",
-                        "strval": "True",
-                        "InheritedType": 2
-                      },
-                      {
-                        "nid": 1000480,
-                        "strtype": "TABPAGE/Checkable",
-                        "strval": "False",
-                        "InheritedType": 2
-                      },
-                      {
-                        "nid": 1000481,
-                        "strtype": "TABPAGE/Press_lock",
-                        "strval": "True",
-                        "InheritedType": 2
-                      },
-                      {
-                        "nid": 1000482,
-                        "strtype": "TABPAGE/Click_focusable",
-                        "strval": "True",
-                        "InheritedType": 2
-                      },
-                      {
-                        "nid": 1000483,
-                        "strtype": "TABPAGE/Adv_hittest",
-                        "strval": "False",
-                        "InheritedType": 2
-                      },
-                      {
-                        "nid": 1000484,
-                        "strtype": "TABPAGE/Ignore_layout",
-                        "strval": "False",
-                        "InheritedType": 2
-                      },
-                      {
-                        "nid": 1000485,
-                        "strtype": "TABPAGE/Floating",
-                        "strval": "False",
-                        "InheritedType": 2
-                      },
-                      {
-                        "nid": 1000486,
-                        "strtype": "TABPAGE/Overflow_visible",
-                        "strval": "False",
-                        "InheritedType": 2
-                      },
-                      {
-                        "nid": 1000487,
-                        "strtype": "TABPAGE/Flex_in_new_track",
-                        "strval": "False",
-                        "InheritedType": 2
-                      },
-                      {
-                        "nid": 1000488,
-                        "strtype": "TABPAGE/Event_bubble",
-                        "strval": "False",
-                        "InheritedType": 2
-                      },
-                      {
-                        "nid": 1000489,
-                        "strtype": "TABPAGE/Gesture_bubble",
-                        "strval": "True",
-                        "InheritedType": 2
-                      },
-                      {
-                        "nid": 1000490,
-                        "strtype": "TABPAGE/Snappable",
-                        "strval": "True",
-                        "InheritedType": 2
-                      },
-                      {
-                        "nid": 1000491,
-                        "strtype": "TABPAGE/Scrollable",
-                        "strval": "True",
-                        "InheritedType": 2
-                      },
-                      {
-                        "nid": 1000492,
-                        "strtype": "TABPAGE/Scroll_elastic",
-                        "strval": "True",
-                        "InheritedType": 2
-                      },
-                      {
-                        "nid": 1000493,
-                        "strtype": "TABPAGE/Scroll_momentum",
-                        "strval": "True",
-                        "InheritedType": 2
-                      },
-                      {
-                        "nid": 1000494,
-                        "strtype": "TABPAGE/Scroll_on_focus",
-                        "strval": "False",
-                        "InheritedType": 2
-                      },
-                      {
-                        "nid": 1000495,
-                        "strtype": "TABPAGE/Scroll_chain",
-                        "strval": "True",
-                        "InheritedType": 2
-                      },
-                      {
-                        "nid": 1000496,
-                        "strtype": "TABPAGE/Scroll_with_arrow",
-                        "strval": "False",
-                        "InheritedType": 2
-                      },
-                      {
-                        "nid": 1000497,
-                        "strtype": "TABPAGE/Scroll_one",
-                        "strval": "False",
-                        "InheritedType": 2
-                      },
-                      {
-                        "nid": 1000498,
-                        "strtype": "TABPAGE/Scrollbar_mode",
-                        "strval": "AUTO",
-                        "InheritedType": 3
-                      },
-                      {
-                        "nid": 1000499,
-                        "strtype": "TABPAGE/Scroll_direction",
-                        "strval": "ALL",
-                        "InheritedType": 3
-                      },
-                      {
-                        "nid": 1000500,
-                        "flags": 1048576,
-                        "strtype": "TABPAGE/States",
-                        "InheritedType": 1
-                      },
-                      {
-                        "nid": 1000501,
-                        "strtype": "TABPAGE/Checked",
-                        "strval": "False",
-                        "InheritedType": 2
-                      },
-                      {
-                        "nid": 1000502,
-                        "strtype": "TABPAGE/Disabled",
-                        "strval": "False",
-                        "InheritedType": 2
-                      },
-                      {
-                        "nid": 1000503,
-                        "strtype": "TABPAGE/Focused",
-                        "strval": "False",
-                        "InheritedType": 2
-                      },
-                      {
-                        "nid": 1000504,
-                        "strtype": "TABPAGE/Pressed",
-                        "strval": "False",
-                        "InheritedType": 2
-                      },
-                      {
-                        "nid": 1000505,
-                        "strtype": "TABPAGE/User_1",
-                        "strval": "False",
-                        "InheritedType": 2
-                      },
-                      {
-                        "nid": 1000506,
-                        "strtype": "TABPAGE/User_2",
-                        "strval": "False",
-                        "InheritedType": 2
-                      },
-                      {
-                        "nid": 1000507,
-                        "strtype": "TABPAGE/User_3",
-                        "strval": "False",
-                        "InheritedType": 2
-                      },
-                      {
-                        "nid": 1000508,
-                        "strtype": "TABPAGE/User_4",
-                        "strval": "False",
-                        "InheritedType": 2
-                      },
-                      {
-                        "nid": 1000509,
-                        "strtype": "TABPAGE/TabPage",
-                        "InheritedType": 1
-                      },
-                      {
-                        "nid": 1000510,
-                        "strtype": "TABPAGE/Title",
-                        "strval": "Date & Time",
-                        "InheritedType": 10
-                      },
-                      {
-                        "part": "lv.PART.MAIN",
-                        "childs": [],
-                        "nid": 1000511,
-                        "strtype": "TABPAGE/Style_main",
-                        "strval": "lv.PART.MAIN, Rectangle, Pad, Text, Transform",
-                        "InheritedType": 11
-                      },
-                      {
-                        "part": "lv.PART.SCROLLBAR",
-                        "childs": [],
-                        "nid": 1000512,
-                        "strtype": "TABPAGE/Style_scrollbar",
-                        "strval": "lv.PART.SCROLLBAR, Rectangle, Pad",
-                        "InheritedType": 11
-                      }
-                    ],
-                    "saved_objtypeKey": "TABPAGE"
+                    "saved_objtypeKey": "TABPAGE",
+                    "tree_closed": true
                   }
                 ],
                 "dont_export": false,

@@ -61,7 +61,6 @@ lv_obj_t * ui_BaleCountResetBtn = NULL;
 lv_obj_t * ui_BaleCountButtonText = NULL;
 lv_obj_t * ui_YearCountResetBtn = NULL;
 lv_obj_t * ui_YearCountButtonText = NULL;
-lv_obj_t * ui_DateTimePage = NULL;
 lv_obj_t * ui_SettingsTitleLabel = NULL;
 lv_obj_t * ui_CloseImgButton = NULL;
 // event funtions
@@ -404,8 +403,6 @@ void ui_Main_screen_init(void)
     lv_obj_set_style_text_opa(ui_YearCountButtonText, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_align(ui_YearCountButtonText, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    ui_DateTimePage = lv_tabview_add_tab(ui_TabView1, "Date & Time");
-
     ui_SettingsTitleLabel = lv_label_create(ui_SettingsPopupPanel);
     lv_obj_set_width(ui_SettingsTitleLabel, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_SettingsTitleLabel, LV_SIZE_CONTENT);    /// 1
@@ -515,7 +512,6 @@ void ui_Main_screen_destroy(void)
     ui_YearCountResetBtn = NULL;
     uiCYD_YearCountButtonText = NULL;
     ui_YearCountButtonText = NULL;
-    ui_DateTimePage = NULL;
     uiCYD_SettingsTitleLabel = NULL;
     ui_SettingsTitleLabel = NULL;
     uiCYD_CloseImgButton = NULL;

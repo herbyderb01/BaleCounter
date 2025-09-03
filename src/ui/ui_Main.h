@@ -49,7 +49,6 @@ extern lv_obj_t * ui_BaleCountButtonText;
 extern void ui_event_YearCountResetBtn(lv_event_t * e);
 extern lv_obj_t * ui_YearCountResetBtn;
 extern lv_obj_t * ui_YearCountButtonText;
-extern lv_obj_t * ui_DateTimePage;
 extern lv_obj_t * ui_SettingsTitleLabel;
 extern void ui_event_CloseImgButton(lv_event_t * e);
 extern lv_obj_t * ui_CloseImgButton;

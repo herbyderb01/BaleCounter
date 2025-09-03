@@ -7,11 +7,23 @@ A bale counting system for ESP32 CYD, touchscreen display, designed for tracking
 <!-- Add your project photos here -->
 ![Project Overview](images/project_overview1.png)
 
-*Complete BaleCounter system installed*
+*Complete BaleCounter with UI program installed*
 
 ![Project in Use](images/project_overview2.png)
 
 *BaleCounter in operation*
+
+![Project in Use](images/side_view1.png)
+
+*Custom cable routing*
+
+![Project in Use](images/side_view2.png)
+
+*Power switch with sliding pen mount*
+
+![Project in Use](images/custom_PCB.png)
+
+*Custom PCB enclosure made for buck converter, screw terminals and power switch*
 
 ## User Interface
 
@@ -128,10 +140,10 @@ If you process 5 bales in 30 minutes:
 
 ### Wiring
 
-- GPIO 35: Bale sensor input (active LOW with pull-up)
-- GPIO 22: Flake sensor input (active LOW with pull-up)
-- Power: 5V from buck converter to ESP32 CYD
-- Ground: Common ground between all components
+- GPIO 35: Bale sensor input <span style="color: #0366fc;">(blue wire)</span> (active LOW with pull-up)
+- GPIO 22: Flake sensor input <span style="color: #fcc603;">(yellow wire)</span> (active LOW with pull-up)
+- Power: 5V from buck converter to ESP32 CYD <span style="color: red;">(red wire)</span>
+- Ground: Common ground between all components <span style="color: #000000;">(black wire)</span>
 
 ## Software Features
 
@@ -139,22 +151,3 @@ If you process 5 bales in 30 minutes:
 - LVGL for UI framework
 - SquareLine Studio for UI design
 - Non-volatile storage for persistence across reboots
-
-## Image Directory Structure
-
-To add images to this README, create an `images/` directory in the project root and add your photos:
-
-```
-BaleCounter/
-├── images/
-│   ├── project_overview.png      # Complete installed system
-│   ├── project_in_use.png        # System in operation
-│   ├── ui_main_screen.png        # Main UI interface
-│   ├── ui_settings_screen.png    # Settings panel
-│   └── wiring_diagram.png        # Complete wiring schematic
-├── src/
-├── platformio.ini
-└── README.md
-```
-
-Replace the placeholder image references above with your actual photos once added.
